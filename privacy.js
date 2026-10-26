@@ -1,7 +1,7 @@
-/* The standard South Circle privacy policy. The /privacy page shows this until a version is saved in
+/* The standard SouthCircle privacy policy. The /privacy page shows this until a version is saved in
    Admin → Settings → Privacy policy (which starts from this text). Simple formatting: "## " starts a heading,
    "- " starts a bullet point, and a blank line starts a new paragraph. */
-window.SC_PRIVACY_DEFAULT = `South Circle ("we", "us") is a technology company based in Lagos, Nigeria. This policy explains what personal information we collect through southcircle.io, why we collect it, and the choices you have. We process personal data in line with the Nigeria Data Protection Act 2023 and, where it applies to you, the EU and UK General Data Protection Regulation.
+window.SC_PRIVACY_DEFAULT = `SouthCircle ("we", "us") is a technology company based in Lagos, Nigeria. This policy explains what personal information we collect through southcircle.io, why we collect it, and the choices you have. We process personal data in line with the Nigeria Data Protection Act 2023 and, where it applies to you, the EU and UK General Data Protection Regulation.
 
 ## What we collect
 - When you send us a message: your name, email address, company, budget range and what you write to us.
@@ -13,7 +13,7 @@ We do not use advertising or tracking cookies, and we do not sell your personal 
 
 ## How we use it
 - To reply to your message and discuss a project with you.
-- To review your application and contact you about roles at South Circle.
+- To review your application and contact you about roles at SouthCircle.
 - To run, secure and improve the website.
 - To meet our legal obligations.
 
@@ -45,6 +45,6 @@ This website is not meant for children under 13, and we do not knowingly collect
 We may update this policy from time to time. The date at the top of this page shows when it last changed.
 
 ## Contact us
-South Circle, Lagos, Nigeria
+SouthCircle, Lagos, Nigeria
 Email: hello@southcircle.io`;
 window.SC_PRIVACY_UPDATED = '2026-10-26';

@@ -15,7 +15,7 @@
   dlg.className = 'msg jn'; dlg.setAttribute('aria-labelledby', 'jnTitle');
   dlg.innerHTML = `
     <button class="msg__close" type="button" aria-label="Close">×</button>
-    <h3 class="msg__title" id="jnTitle">Join South Circle</h3>
+    <h3 class="msg__title" id="jnTitle">Join SouthCircle</h3>
     <p class="jn__sub">Tell us who you are and the role you’d like. We read every application.</p>
     <form class="msg__form" novalidate>
       <label>Full name<input name="name" required maxlength="200" autocomplete="name"></label>
@@ -25,7 +25,7 @@
       <label>Phone <i>(optional)</i><input name="phone" type="tel" maxlength="60" autocomplete="tel"></label>
       <label>Where are you based? <i>(optional)</i><input name="location" maxlength="200" autocomplete="address-level2" placeholder="Lagos, Nigeria"></label>
       <label class="msg__wide">Portfolio, LinkedIn or CV link <i>(optional)</i><input name="link" type="url" maxlength="500" placeholder="https://"></label>
-      <label class="msg__wide">Why South Circle, and what have you worked on?<textarea name="message" required maxlength="5000" rows="5"></textarea></label>
+      <label class="msg__wide">Why SouthCircle, and what have you worked on?<textarea name="message" required maxlength="5000" rows="5"></textarea></label>
       <label class="msg__hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
       <button class="msg__send" type="submit">Send application</button>
     </form>
