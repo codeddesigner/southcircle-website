@@ -12,6 +12,10 @@
     {
       "source": "/admin/:tab(inbox|products|numbers|gallery|clients|team|content|pages|settings|hiring)",
       "destination": "/admin/index.html"
+    },
+    {
+      "source": "/og.jpg",
+      "destination": "https://raw.githubusercontent.com/codeddesigner/southcircle-website/main/og.jpg"
     }
   ],
   "headers": [
