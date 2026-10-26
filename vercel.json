@@ -1,0 +1,82 @@
+{
+  "cleanUrls": false,
+  "rewrites": [
+    {
+      "source": "/:page(products|stats|services|gallery|careers|contact)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/admin/:tab(inbox|products|numbers|gallery|clients|team|content|pages|settings|hiring)",
+      "destination": "/admin/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "<https://southcircle.io/>; rel=\"canonical\""
+        }
+      ]
+    },
+    {
+      "source": "/:page(products|stats|services|gallery|careers|contact)",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "<https://southcircle.io/:page>; rel=\"canonical\""
+        }
+      ]
+    },
+    {
+      "source": "/privacy",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "<https://southcircle.io/privacy>; rel=\"canonical\""
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "southcircleio.vercel.app"
+        }
+      ],
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.(js|css|svg|html)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/home",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/privacy.html",
+      "destination": "/privacy",
+      "permanent": true
+    }
+  ]
+}

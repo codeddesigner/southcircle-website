@@ -1,0 +1,1047 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>South Circle Admin</title>
+<link rel="icon" href="/favicon.svg?v=4" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f3f1ec;--card:#fff;--ink:#0b0b0b;--mute:#7a7873;--line:rgba(11,11,11,.12);--soft:#3a3936;--accent:#ff4a12;--ok:#1d7a46;--bad:#b42318;
+  --font:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--r:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:14px;line-height:1.45;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+[hidden]{display:none !important}
+.logo{height:20px;width:auto;display:block}
+
+/* login */
+.auth{min-height:100vh;display:grid;place-items:center;padding:24px}
+.auth__card{width:min(400px,100%);background:var(--card);border-radius:20px;padding:32px;box-shadow:0 30px 60px -40px rgba(0,0,0,.3)}
+.auth__card .logo{height:22px;margin-bottom:28px}
+.auth h1{font-size:26px;font-weight:500;letter-spacing:-.04em;line-height:1.1}
+.auth p.sub{color:var(--mute);margin:6px 0 22px}
+.auth form{display:grid;gap:12px}
+.auth__links{display:flex;justify-content:space-between;gap:12px;margin-top:16px;font-size:13px;color:var(--mute)}
+.auth__links button{text-decoration:underline;text-underline-offset:3px;color:var(--mute)}
+.auth__links button:hover{color:var(--ink)}
+
+/* fields + buttons */
+.f{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute)}
+.f input,.f select,.f textarea{font-size:15px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;outline:none;width:100%}
+.f textarea{resize:vertical;min-height:90px}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--ink)}
+.f small{color:var(--mute);font-size:11px}
+.btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:99px;background:var(--ink);color:#fff;font-size:14px;font-weight:500;white-space:nowrap;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--ink);opacity:1}
+.btn.danger{background:transparent;color:var(--bad);border:1px solid rgba(180,35,24,.3)}
+.btn.sm{height:32px;padding:0 12px;font-size:13px}
+.icon-btn{width:32px;height:32px;border-radius:8px;display:inline-grid;place-items:center;color:var(--soft);border:1px solid transparent}
+.icon-btn:hover{border-color:var(--line);background:#fff}
+.icon-btn:disabled{opacity:.3;cursor:default}
+.icon-btn svg{width:16px;height:16px}
+.note{font-size:13px;min-height:1em}
+.note.err{color:var(--bad)}
+.note.ok{color:var(--ok)}
+
+/* shell */
+.top{position:sticky;top:0;z-index:10;background:rgba(243,241,236,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top__in{max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:24px}
+.top__brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.top__brand span{font-size:12px;color:var(--mute);border:1px solid var(--line);border-radius:99px;padding:2px 8px}
+.tabs{display:flex;gap:4px;margin-left:12px;overflow-x:auto}
+.tabs button{height:34px;padding:0 14px;border-radius:99px;color:var(--soft);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.tabs button.on{background:var(--ink);color:#fff}
+.badge{min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;display:inline-grid;place-items:center}
+.top__right{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:13px;color:var(--mute)}
+.top__right a{color:var(--mute)}
+main{max-width:1180px;margin:0 auto;padding:28px 24px 80px}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.head h2{font-size:32px;font-weight:500;letter-spacing:-.045em;line-height:1}
+.head p{color:var(--mute);margin-top:6px;max-width:60ch}
+.head__actions{display:flex;gap:8px;flex-wrap:wrap}
+.empty{background:var(--card);border-radius:var(--r);padding:48px 24px;text-align:center;color:var(--mute)}
+
+/* inbox */
+.inbox{display:grid;grid-template-columns:minmax(260px,360px) 1fr;gap:16px;align-items:start}
+.seg{display:inline-flex;background:#fff;border-radius:99px;padding:3px;border:1px solid var(--line)}
+.seg button{height:30px;padding:0 12px;border-radius:99px;font-size:13px;color:var(--soft)}
+.seg button.on{background:var(--ink);color:#fff}
+.logoset{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:16px}
+.logoset b{font-weight:500}
+.logoset p{color:var(--mute);font-size:13px;margin-top:2px;max-width:56ch}
+.mlist{background:var(--card);border-radius:var(--r);overflow:hidden}
+.mitem{display:block;width:100%;text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);position:relative}
+.mitem:last-child{border-bottom:0}
+.mitem:hover{background:#faf9f6}
+.mitem.on{background:#f1efe9}
+.mitem b{display:block;font-weight:500;font-size:14px;padding-right:70px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mitem span{display:block;color:var(--mute);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mitem time{position:absolute;right:16px;top:15px;font-size:12px;color:var(--mute)}
+.mitem.unread b::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:1px}
+.mview{background:var(--card);border-radius:var(--r);padding:24px;min-height:300px}
+.mview h3{font-size:24px;font-weight:500;letter-spacing:-.035em}
+.mview .meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--mute);margin:8px 0 18px;font-size:13px}
+.mview .meta a{color:var(--ink)}
+.mview .body{white-space:pre-wrap;font-size:15px;line-height:1.6;border-top:1px solid var(--line);padding-top:18px}
+.mview .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+
+/* rows (products, clients) */
+.rows{display:grid;gap:10px}
+.row{background:var(--card);border-radius:var(--r);padding:12px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+.row.off{opacity:.55}
+.row__title{font-weight:500;font-size:15px}
+.row__sub{color:var(--mute);font-size:13px}
+.row__ctl{display:flex;align-items:center;gap:2px}
+.dot{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;flex:none;overflow:hidden}
+.dot svg{width:46%;height:46%}
+.dot img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.tag{font-size:11px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--line);border-radius:99px;padding:2px 8px;color:var(--soft);margin-left:8px;vertical-align:2px}
+.clogo{width:46px;height:46px;border-radius:10px;background:#f6f5f1;display:grid;place-items:center;font-weight:600;letter-spacing:-.03em;overflow:hidden}
+.tface{width:46px;height:46px;border-radius:50%;background:#e9e6df;display:grid;place-items:center;overflow:hidden;font-weight:600;font-size:13px;color:var(--soft)}
+.tface img{width:100%;height:100%;object-fit:cover}
+.clogo img{max-width:80%;max-height:60%;object-fit:contain;filter:brightness(0)}
+/* numbers */
+.nrows{display:grid;gap:10px}
+.nrow{background:var(--card);border-radius:var(--r);padding:14px;display:grid;grid-template-columns:28px 80px 1fr 80px 1.4fr;gap:10px;align-items:end}
+.nrow > i{font-style:normal;color:var(--mute);font-size:12px;align-self:center;font-variant-numeric:tabular-nums}
+.nprev{display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border:1px solid var(--line);border-radius:var(--r);margin-bottom:16px;overflow:hidden}
+.nprev div{padding:14px 16px;border-left:1px solid var(--line)}
+.nprev div:first-child{border-left:0}
+.nprev small{display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+.nprev b{display:block;font-size:30px;font-weight:400;letter-spacing:-.05em;margin-top:18px;white-space:nowrap;font-variant-numeric:tabular-nums}
+@media (max-width:820px){.nrow{grid-template-columns:1fr 1fr}.nrow > i{grid-column:1/-1}.nrow .wide{grid-column:1/-1}.nprev{grid-template-columns:1fr 1fr}.nprev div:nth-child(3){border-left:0}}
+/* one-colour logo tool */
+.vz{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:14px}
+.vz__head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.vz__head b{font-weight:500;font-size:16px;letter-spacing:-.02em}
+.vz__head p{color:var(--mute);font-size:13px;margin-top:2px}
+.vz__ctl{display:grid;gap:10px}
+.vz__ctl label{display:grid;grid-template-columns:110px 1fr 34px;align-items:center;gap:10px;font-size:13px;color:var(--soft)}
+.vz__ctl input[type=range]{width:100%;accent-color:var(--ink);padding:0;border:0;background:none;height:auto}
+.vz__ctl output{font-variant-numeric:tabular-nums;color:var(--mute);text-align:right}
+.vz__prev{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.vz__box{height:88px;border-radius:10px;display:grid;place-items:center;padding:14px;position:relative}
+.vz__box img{max-width:100%;max-height:40px;object-fit:contain}
+.vz__box.dk{background:#2d3cff}
+.vz__box.lt{background:#f3f1ec;border:1px solid var(--line)}
+.vz__box.lt img{filter:brightness(0)}
+.vz__box.src{grid-column:1/-1;height:70px;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 0 0/14px 14px;border:1px solid var(--line)}
+.vz__box small{position:absolute;left:8px;top:6px;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+.vz__box.dk small{color:rgba(255,255,255,.7)}
+.vz__acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* gallery */
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.gcard{background:var(--card);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
+.gcard.off{opacity:.55}
+.gcard__pic{position:relative;aspect-ratio:1;border-radius:50%;overflow:hidden;background:#eee}
+.gcard__pic img,.gcard__pic svg{width:100%;height:100%;object-fit:cover;display:block}
+.gcard__pic em{position:absolute;inset:auto 0 8px;text-align:center;font-style:normal;font-size:11px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.gcard__n{position:absolute;left:8px;top:8px;background:rgba(11,11,11,.7);color:#fff;font-size:11px;border-radius:99px;padding:1px 7px}
+.gcard input{font-size:13px;border:1px solid var(--line);border-radius:8px;padding:7px 9px;width:100%;outline:none;background:#fff}
+.gcard input:focus{border-color:var(--ink)}
+.gcard__ctl{display:flex;justify-content:space-between;align-items:center}
+.gcard__ctl span{display:flex}
+.gcard__ctl .icon-btn{width:28px;height:28px}
+.drop{border:1.5px dashed rgba(11,11,11,.25);border-radius:var(--r);padding:22px;text-align:center;color:var(--mute);margin-bottom:16px;transition:background .2s,border-color .2s}
+.drop.over{background:#fff;border-color:var(--ink);color:var(--ink)}
+
+/* editor drawer */
+.drawer{position:fixed;inset:0;z-index:50;display:flex;justify-content:flex-end;background:rgba(11,11,11,.35)}
+.drawer__panel{width:min(520px,100%);height:100%;background:var(--paper);overflow:auto;padding:24px 24px 100px;animation:slide .35s cubic-bezier(.19,1,.22,1)}
+@keyframes slide{from{transform:translateX(40px);opacity:0}}
+.drawer__head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.drawer__head h3{font-size:24px;font-weight:500;letter-spacing:-.04em}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form{display:grid;gap:12px}
+.prev{display:flex;align-items:center;gap:14px;background:#fff;border-radius:var(--r);padding:14px}
+.prev .dot{width:64px;height:64px}
+.color{display:flex;gap:8px;align-items:center}
+.color input[type=color]{width:44px;height:42px;padding:3px;border-radius:10px;flex:none}
+.drawer__foot{position:sticky;bottom:-100px;display:flex;gap:8px;align-items:center;margin-top:20px;padding:16px 0;background:var(--paper)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:99px;font-size:13px;z-index:60;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.toast.err{background:var(--bad)}
+.spin{width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--ink);border-radius:50%;animation:r .8s linear infinite;margin:40px auto}
+@keyframes r{to{transform:rotate(360deg)}}
+
+@media (max-width:820px){
+  .top__in{flex-wrap:wrap;gap:10px;padding:12px 16px}
+  .tabs{order:3;width:100%;margin-left:0}
+  main{padding:20px 16px 80px}
+  .inbox{grid-template-columns:1fr}
+  .grid2{grid-template-columns:1fr}
+  .row{grid-template-columns:auto 1fr;}
+  .row__ctl{grid-column:1/-1;justify-content:flex-end}
+}
+</style>
+</head>
+<body>
+
+<!-- sign in -->
+<section class="auth" id="auth" hidden>
+  <div class="auth__card">
+    <svg class="logo" viewBox="0 0 954 143" fill="none" aria-label="South Circle"><use href="#mark"/></svg>
+    <h1 id="authTitle">Sign in</h1>
+    <p class="sub" id="authSub">Manage the South Circle website.</p>
+    <form id="authForm" novalidate>
+      <label class="f" id="fEmail">Email<input name="email" type="email" autocomplete="email" required></label>
+      <label class="f" id="fPass">Password<input name="password" type="password" autocomplete="current-password" minlength="8" required></label>
+      <button class="btn" type="submit" id="authBtn">Sign in</button>
+      <p class="note" id="authNote" role="status"></p>
+    </form>
+    <div class="auth__links" id="authLinks">
+      <button type="button" data-mode="signup">First time? Create your account</button>
+      <button type="button" data-mode="forgot">Forgot password?</button>
+    </div>
+  </div>
+</section>
+
+<!-- not an admin -->
+<section class="auth" id="denied" hidden>
+  <div class="auth__card">
+    <h1>No admin access</h1>
+    <p class="sub"><span id="deniedEmail"></span> is signed in, but it isn't on the South Circle admin list.</p>
+    <button class="btn ghost" type="button" data-signout>Sign out</button>
+  </div>
+</section>
+
+<!-- the admin -->
+<div id="app" hidden>
+  <header class="top">
+    <div class="top__in">
+      <a class="top__brand" href="/admin/"><svg class="logo" viewBox="0 0 954 143" fill="none" aria-label="South Circle"><use href="#mark"/></svg><span>Admin</span></a>
+      <nav class="tabs" id="tabs">
+        <button data-tab="inbox">Inbox <i class="badge" id="unread" hidden></i></button>
+        <button data-tab="products">Products</button>
+        <button data-tab="numbers">Stats</button>
+        <button data-tab="gallery">Gallery</button>
+        <button data-tab="clients">Clients</button>
+        <button data-tab="team">Team</button>
+        <button data-tab="content">Content</button>
+        <button data-tab="pages">Pages</button>
+      </nav>
+      <div class="top__right"><a href="/" target="_blank" rel="noopener">View site ↗</a><span id="who"></span><button class="btn ghost sm" type="button" data-signout>Sign out</button></div>
+    </div>
+  </header>
+  <main id="view"></main>
+</div>
+
+<div class="drawer" id="drawer" hidden><div class="drawer__panel" id="drawerPanel"></div></div>
+<input type="file" id="picker" accept="image/*" hidden>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="mark" viewBox="0 0 954 143"><path d="M209.08 129.56C200.013 129.56 192.12 127.907 185.4 124.6C178.787 121.293 173.56 116.707 169.72 110.84C165.88 104.973 163.64 98.1468 163 90.3601L180.76 89.2401C181.507 94.5734 183.053 99.107 185.4 102.84C187.747 106.467 190.893 109.24 194.84 111.16C198.893 112.973 203.747 113.88 209.4 113.88C214.307 113.88 218.467 113.293 221.88 112.12C225.4 110.84 228.067 108.973 229.88 106.52C231.693 104.067 232.6 101.08 232.6 97.5601C232.6 94.3601 231.8 91.5334 230.2 89.0801C228.707 86.5201 225.773 84.2268 221.4 82.2001C217.133 80.0668 210.84 77.9868 202.52 75.9601C193.453 73.7201 186.2 71.2668 180.76 68.6001C175.32 65.9334 171.373 62.6268 168.92 58.6801C166.573 54.6268 165.4 49.6668 165.4 43.8001C165.4 37.2934 166.947 31.5868 170.04 26.6801C173.24 21.6668 177.773 17.7734 183.64 15.0001C189.507 12.2268 196.547 10.8401 204.76 10.8401C213.4 10.8401 220.76 12.4401 226.84 15.6401C233.027 18.8401 237.88 23.2134 241.4 28.7601C245.027 34.3068 247.267 40.6534 248.12 47.8001L230.36 48.7601C229.827 44.3868 228.493 40.5468 226.36 37.2401C224.227 33.8267 221.347 31.2134 217.72 29.4001C214.093 27.4801 209.667 26.5201 204.44 26.5201C197.827 26.5201 192.6 28.0668 188.76 31.1601C185.027 34.1467 183.16 38.1467 183.16 43.1601C183.16 46.3601 183.907 49.0801 185.4 51.3201C187 53.4534 189.773 55.3201 193.72 56.9201C197.773 58.5201 203.48 60.2268 210.84 62.0401C220.653 64.2801 228.44 67.0534 234.2 70.3601C240.067 73.5601 244.227 77.3468 246.68 81.7201C249.133 86.0934 250.36 91.0534 250.36 96.6001C250.36 103.32 248.6 109.187 245.08 114.2C241.667 119.107 236.867 122.893 230.68 125.56C224.493 128.227 217.293 129.56 209.08 129.56Z" fill="currentColor"/><path d="M299.962 128.92C291.856 128.92 284.763 127.107 278.683 123.48C272.603 119.853 267.909 114.68 264.603 107.96C261.296 101.24 259.643 93.4002 259.643 84.4402C259.643 75.3735 261.296 67.5335 264.603 60.9202C267.909 54.3069 272.603 49.1869 278.683 45.5602C284.763 41.8269 291.856 39.9602 299.962 39.9602C308.069 39.9602 315.163 41.8269 321.243 45.5602C327.323 49.1869 332.016 54.3069 335.323 60.9202C338.629 67.5335 340.283 75.3735 340.283 84.4402C340.283 93.4002 338.629 101.24 335.323 107.96C332.016 114.68 327.323 119.853 321.243 123.48C315.163 127.107 308.069 128.92 299.962 128.92ZM299.962 114.2C307.216 114.2 312.816 111.587 316.762 106.36C320.709 101.027 322.683 93.7202 322.683 84.4402C322.683 75.1602 320.709 67.9069 316.762 62.6802C312.816 57.3469 307.216 54.6802 299.962 54.6802C292.816 54.6802 287.216 57.3469 283.162 62.6802C279.216 67.9069 277.243 75.1602 277.243 84.4402C277.243 93.7202 279.216 101.027 283.162 106.36C287.216 111.587 292.816 114.2 299.962 114.2Z" fill="currentColor"/><path d="M377.423 128.92C368.889 128.92 362.062 126.093 356.943 120.44C351.929 114.68 349.423 106.733 349.423 96.6001V41.8801H366.383V92.2801C366.383 99.96 367.716 105.613 370.383 109.24C373.049 112.867 377.102 114.68 382.542 114.68C388.729 114.68 393.529 112.707 396.943 108.76C400.463 104.707 402.223 99.053 402.223 91.8001V41.8801H419.182V127H403.342L403.023 104.76L405.423 105.72C403.929 113.187 400.783 118.947 395.982 123C391.182 126.947 384.996 128.92 377.423 128.92Z" fill="currentColor"/><path d="M463.594 127C455.487 127 449.514 125.133 445.674 121.4C441.834 117.667 439.914 111.853 439.914 103.96V21.8801H456.874V102.68C456.874 106.627 457.727 109.347 459.434 110.84C461.14 112.333 463.754 113.08 467.274 113.08H479.434V127H463.594ZM426.954 55.8001V41.8801H479.434V55.8001H426.954Z" fill="currentColor"/><path d="M487.641 127V13.4001H504.601V61.0801L502.521 60.7601C503.481 55.9601 505.241 52.0668 507.801 49.0801C510.361 45.9868 513.508 43.6934 517.241 42.2001C520.975 40.7068 525.081 39.9601 529.561 39.9601C535.748 39.9601 540.975 41.3468 545.241 44.1201C549.508 46.7868 552.708 50.5734 554.841 55.4801C557.081 60.3868 558.201 65.9868 558.201 72.2801V127H541.241V76.7601C541.241 69.0801 539.908 63.4268 537.241 59.8001C534.681 56.0668 530.628 54.2001 525.081 54.2001C518.895 54.2001 513.935 56.1734 510.201 60.1201C506.468 63.9601 504.601 69.6134 504.601 77.0801V127H487.641Z" fill="currentColor"/><path d="M621.052 129.56C610.812 129.56 601.799 127.213 594.013 122.52C586.226 117.72 580.146 110.893 575.772 102.04C571.399 93.1868 569.212 82.6268 569.212 70.3601C569.212 58.2001 571.346 47.6934 575.612 38.8401C579.986 29.8801 586.066 23.0001 593.853 18.2001C601.639 13.2934 610.759 10.8401 621.212 10.8401C635.293 10.8401 646.226 14.3601 654.013 21.4001C661.799 28.4401 666.866 38.2001 669.212 50.6801L651.133 51.6401C649.639 43.8534 646.439 37.7734 641.533 33.4001C636.626 28.9201 629.853 26.6801 621.212 26.6801C614.279 26.6801 608.253 28.4401 603.133 31.9601C598.119 35.4801 594.173 40.4934 591.293 47.0001C588.519 53.5068 587.133 61.2934 587.133 70.3601C587.133 79.4268 588.519 87.2134 591.293 93.7201C594.173 100.227 598.173 105.187 603.293 108.6C608.413 112.013 614.332 113.72 621.052 113.72C630.226 113.72 637.319 111.32 642.333 106.52C647.453 101.613 650.652 94.8934 651.932 86.3601L670.013 87.3201C668.626 95.9601 665.853 103.427 661.693 109.72C657.533 116.013 652.039 120.92 645.212 124.44C638.386 127.853 630.332 129.56 621.052 129.56Z" fill="currentColor"/><path d="M679.766 127V41.8801H696.726V127H679.766ZM679.446 29.5601V12.6001H697.046V29.5601H679.446Z" fill="currentColor"/><path d="M714.11 127V41.8801H729.63L730.27 64.4401L728.83 63.9601C730.003 56.2801 732.35 50.6801 735.87 47.1601C739.497 43.6401 744.35 41.8801 750.43 41.8801H758.59V57.0801H750.43C746.163 57.0801 742.59 57.7734 739.71 59.1601C736.83 60.5468 734.643 62.6801 733.15 65.5601C731.763 68.4401 731.07 72.1734 731.07 76.7601V127H714.11Z" fill="currentColor"/><path d="M797.713 128.92C789.606 128.92 782.513 127.107 776.432 123.48C770.352 119.853 765.659 114.68 762.352 107.96C759.046 101.24 757.393 93.4002 757.393 84.4402C757.393 75.4802 759.046 67.6935 762.352 61.0802C765.659 54.3602 770.352 49.1869 776.432 45.5602C782.513 41.8269 789.606 39.9602 797.713 39.9602C804.646 39.9602 810.779 41.1869 816.112 43.6402C821.552 45.9869 825.926 49.4535 829.232 54.0402C832.646 58.6269 834.832 64.2269 835.792 70.8402L818.033 71.8002C817.179 66.2535 814.939 62.0402 811.312 59.1602C807.686 56.1735 803.153 54.6802 797.713 54.6802C790.566 54.6802 784.966 57.3469 780.912 62.6802C776.966 67.9069 774.992 75.1602 774.992 84.4402C774.992 93.7202 776.966 101.027 780.912 106.36C784.966 111.587 790.566 114.2 797.713 114.2C803.153 114.2 807.686 112.707 811.312 109.72C814.939 106.627 817.179 101.987 818.033 95.8002L835.792 96.7602C834.832 103.267 832.646 108.92 829.232 113.72C825.926 118.52 821.552 122.253 816.112 124.92C810.779 127.587 804.646 128.92 797.713 128.92Z" fill="currentColor"/><path d="M862.607 127C857.061 127 852.581 125.56 849.167 122.68C845.754 119.8 844.047 115.213 844.047 108.92V13.4001H861.008V107.32C861.008 109.24 861.487 110.68 862.448 111.64C863.514 112.6 865.008 113.08 866.927 113.08H873.648V127H862.607Z" fill="currentColor"/><path d="M915.15 128.92C906.83 128.92 899.63 127.107 893.55 123.48C887.577 119.853 882.937 114.68 879.63 107.96C876.43 101.24 874.83 93.4002 874.83 84.4402C874.83 75.4802 876.43 67.6935 879.63 61.0802C882.937 54.3602 887.577 49.1869 893.55 45.5602C899.523 41.8269 906.563 39.9602 914.67 39.9602C922.35 39.9602 929.123 41.7735 934.99 45.4002C940.857 48.9202 945.39 54.0402 948.59 60.7602C951.897 67.4802 953.55 75.5869 953.55 85.0802V89.4002H892.43C892.857 97.7202 895.043 103.96 898.99 108.12C903.043 112.28 908.483 114.36 915.31 114.36C920.323 114.36 924.483 113.187 927.79 110.84C931.097 108.493 933.39 105.347 934.67 101.4L952.27 102.52C950.03 110.413 945.603 116.813 938.99 121.72C932.483 126.52 924.537 128.92 915.15 128.92ZM892.43 76.6002H935.63C935.097 69.0269 932.91 63.4269 929.07 59.8002C925.337 56.1735 920.537 54.3602 914.67 54.3602C908.59 54.3602 903.577 56.2802 899.63 60.1202C895.79 63.8535 893.39 69.3468 892.43 76.6002Z" fill="currentColor"/><path d="M71.5 6C107.675 6 137 35.3253 137 71.5C137 107.675 107.675 137 71.5 137C35.3253 137 6 107.675 6 71.5C6 35.3253 35.3253 6 71.5 6Z" stroke-width="12" stroke="currentColor"/><path d="M72.6545 108.258C66.8935 108.258 61.9185 107.243 57.7285 105.214C53.5385 103.184 50.2325 100.369 47.8105 96.7687C45.4535 93.1026 44.0785 88.8474 43.6865 84.003L56.6486 83.2174C57.0406 86.2288 57.8925 88.7819 59.2015 90.8768C60.5765 92.9717 62.3765 94.5756 64.6025 95.6885C66.8935 96.7359 69.6425 97.2596 72.8505 97.2596C75.6005 97.2596 77.9245 96.9323 79.8225 96.2777C81.7865 95.5575 83.2595 94.5428 84.2415 93.2335C85.2895 91.8588 85.8126 90.1894 85.8126 88.2255C85.8126 86.4579 85.3876 84.8868 84.5366 83.512C83.6856 82.0718 82.0485 80.7952 79.6265 79.6823C77.2045 78.5039 73.6035 77.3583 68.8245 76.2454C63.0635 74.9361 58.4485 73.4631 54.9785 71.8265C51.5095 70.1244 48.9885 68.0295 47.4175 65.5419C45.8465 62.9887 45.0605 59.8137 45.0605 56.0167C45.0605 51.9579 46.0755 48.3901 48.1055 45.3132C50.1345 42.1709 53.0145 39.7487 56.7465 38.0466C60.4775 36.279 64.9625 35.3953 70.1995 35.3953C75.7635 35.3953 80.4775 36.41 84.3395 38.4394C88.2025 40.4033 91.2465 43.1201 93.4725 46.5898C95.6985 50.0594 97.0726 54.0528 97.5966 58.5699L84.7325 59.159C84.4055 56.6059 83.6195 54.3801 82.3755 52.4816C81.1975 50.5831 79.5606 49.1102 77.4666 48.0627C75.4366 46.9498 72.9485 46.3934 70.0035 46.3934C66.3365 46.3934 63.4235 47.2444 61.2635 48.9465C59.1685 50.5831 58.1215 52.7762 58.1215 55.5257C58.1215 57.4242 58.5465 58.9954 59.3975 60.2392C60.3145 61.483 61.9185 62.5632 64.2095 63.4797C66.5005 64.3308 69.7085 65.2473 73.8325 66.2293C80.0515 67.5386 84.9945 69.2079 88.6605 71.2373C92.3265 73.2667 94.9455 75.6235 96.5165 78.3075C98.0875 80.9916 98.8735 84.0685 98.8735 87.5381C98.8735 91.7933 97.7925 95.4921 95.6325 98.6344C93.4725 101.711 90.4286 104.101 86.5005 105.803C82.5725 107.439 77.9575 108.258 72.6545 108.258Z" fill="currentColor"/></symbol>
+</svg>
+
+<script>
+/* South Circle admin. Talks straight to Supabase (auth, database, file storage) with the public key;
+   what a signed-in person can read or change is enforced by the database's row-level security. */
+const SB_URL = 'https://yjunyikzjnvffpzkcduz.supabase.co';
+const SB_KEY = 'sb_publishable_9vTENY-4Qajb5zaDcqI6FQ_QTrCmM5M';
+const BUCKET = 'southcircle';
+const ADMIN_URL = location.origin + '/admin/';
+const ANIMS = { bars: 'Bars (finance)', route: 'Route (delivery)', pulse: 'Pulse (health)', shop: 'Shop (commerce)', audio: 'Audio (media)', solar: 'Sun (energy)' };
+const STATUSES = ['Live', 'Beta', 'Pilot', 'Building', 'Sunset'];
+const SLOT_COUNT = 14;
+
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const ICON = {
+  up: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg>',
+  down: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg>',
+  edit: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10.5 2.5l3 3L6 13H3v-3z"/></svg>',
+  eye: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8Z"/><circle cx="8" cy="8" r="2"/></svg>',
+  hidden: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 2l12 12M6.5 4C7 3.7 7.5 3.5 8 3.5c4 0 6.5 4.5 6.5 4.5s-.7 1.3-2 2.5M4 5.5C2.4 6.7 1.5 8 1.5 8S4 12.5 8 12.5c1 0 1.9-.3 2.7-.7"/></svg>',
+  trash: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4"/></svg>',
+  image: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2.5" width="12" height="11" rx="2"/><circle cx="6" cy="6.5" r="1.3"/><path d="m2.5 12 4-4 3 3 2-2 2.5 2.5"/></svg>'
+};
+
+/* ---------- toast ---------- */
+let toastT;
+function toast(msg, err) {
+  let t = $('.toast');
+  if (!t) { t = document.createElement('div'); t.className = 'toast'; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.toggle('err', !!err); t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, err ? 5000 : 2200);
+}
+
+/* ---------- session (Supabase Auth over plain HTTP) ---------- */
+let session = null;
+try { session = JSON.parse(localStorage.getItem('sc_admin_session') || 'null'); } catch (e) { session = null; }
+const saveSession = s => {
+  session = s ? { access_token: s.access_token, refresh_token: s.refresh_token, expires_at: s.expires_at || Math.floor(Date.now() / 1000) + (s.expires_in || 3600), user: s.user || session?.user } : null;
+  try { session ? localStorage.setItem('sc_admin_session', JSON.stringify(session)) : localStorage.removeItem('sc_admin_session'); } catch (e) {}
+};
+async function auth(path, body, token) {
+  const r = await fetch(`${SB_URL}/auth/v1/${path}`, { method: 'POST',
+    headers: { apikey: SB_KEY, 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body || {}) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.msg || j.error_description || j.message || j.error || `Error ${r.status}`);
+  return j;
+}
+async function fresh() {
+  if (!session) throw new Error('Signed out');
+  if (session.expires_at * 1000 - Date.now() < 60000) {
+    try { saveSession(await auth('token?grant_type=refresh_token', { refresh_token: session.refresh_token })); }
+    catch (e) { saveSession(null); showAuth('signin', 'Your session ended. Please sign in again.'); throw e; }
+  }
+  return session.access_token;
+}
+/* database + storage calls as the signed-in admin */
+async function api(path, { method = 'GET', body, headers = {}, raw } = {}) {
+  const token = await fresh();
+  const r = await fetch(SB_URL + path, { method,
+    headers: { apikey: SB_KEY, Authorization: `Bearer ${token}`, ...(body !== undefined && !raw ? { 'Content-Type': 'application/json' } : {}), ...headers },
+    body: body === undefined ? undefined : raw ? body : JSON.stringify(body) });
+  const text = await r.text();
+  let j = null; try { j = text ? JSON.parse(text) : null; } catch (e) {}
+  if (!r.ok) throw new Error((j && (j.message || j.msg || j.error)) || `Error ${r.status}`);
+  return j;
+}
+const db = {
+  list: (t, q = 'order=sort.asc,created_at.asc') => api(`/rest/v1/${t}?select=*&${q}`),
+  insert: (t, row) => api(`/rest/v1/${t}`, { method: 'POST', body: row, headers: { Prefer: 'return=representation' } }).then(r => r[0]),
+  update: (t, id, patch) => api(`/rest/v1/${t}?id=eq.${id}`, { method: 'PATCH', body: patch, headers: { Prefer: 'return=representation' } }).then(r => r[0]),
+  remove: (t, id) => api(`/rest/v1/${t}?id=eq.${id}`, { method: 'DELETE' })
+};
+
+/* ---------- uploads: photos are resized in the browser before upload ---------- */
+async function shrink(file, max) {
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return file;
+  const img = await createImageBitmap(file).catch(() => null);
+  if (!img) return file;
+  const k = Math.min(1, max / Math.max(img.width, img.height));
+  if (k === 1 && file.size < 900000) return file;
+  const c = document.createElement('canvas');
+  c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  const blob = await new Promise(res => c.toBlob(res, 'image/webp', 0.86));
+  return blob ? new File([blob], file.name.replace(/\.\w+$/, '') + '.webp', { type: 'image/webp' }) : file;
+}
+async function upload(file, folder, max = 1600) {
+  if (!file.type.startsWith('image/')) throw new Error('Please choose an image file.');
+  const f = await shrink(file, max);
+  if (f.size > 10 * 1024 * 1024) throw new Error('That image is over 10 MB.');
+  const ext = (f.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  await api(`/storage/v1/object/${BUCKET}/${path}`, { method: 'POST', body: f, raw: true, headers: { 'Content-Type': f.type, 'x-upsert': 'false', 'cache-control': '31536000' } });
+  return `${SB_URL}/storage/v1/object/public/${BUCKET}/${path}`;
+}
+async function removeFile(url) {
+  const pre = `${SB_URL}/storage/v1/object/public/${BUCKET}/`;
+  if (!url || !url.startsWith(pre)) return;
+  try { await api(`/storage/v1/object/${BUCKET}`, { method: 'DELETE', body: { prefixes: [url.slice(pre.length)] } }); } catch (e) {}
+}
+function pick(multiple) {
+  return new Promise(res => {
+    const p = $('#picker'); p.multiple = !!multiple; p.value = '';
+    p.onchange = () => res([...p.files]);
+    p.click();
+  });
+}
+
+/* ---------- sign in / sign up / reset ---------- */
+let mode = 'signin';
+function showAuth(m, note, ok) {
+  mode = m;
+  $('#app').hidden = true; $('#denied').hidden = true; $('#auth').hidden = false;
+  const T = { signin: ['Sign in', 'Manage the South Circle website.', 'Sign in'],
+    signup: ['Create your account', 'Use the email address that has admin access.', 'Create account'],
+    forgot: ['Reset your password', 'We’ll email you a link to set a new one.', 'Send reset link'],
+    reset: ['Set a new password', 'Choose a password with at least 8 characters.', 'Save password'] }[m];
+  $('#authTitle').textContent = T[0]; $('#authSub').textContent = T[1]; $('#authBtn').textContent = T[2];
+  $('#fEmail').hidden = m === 'reset'; $('#fPass').hidden = m === 'forgot';
+  $('#fPass input').autocomplete = m === 'signin' ? 'current-password' : 'new-password';
+  $('#authLinks').innerHTML = m === 'signin'
+    ? '<button type="button" data-mode="signup">First time? Create your account</button><button type="button" data-mode="forgot">Forgot password?</button>'
+    : '<button type="button" data-mode="signin">Back to sign in</button>';
+  const n = $('#authNote'); n.textContent = note || ''; n.className = 'note' + (note ? (ok ? ' ok' : ' err') : '');
+}
+$('#authLinks').addEventListener('click', e => { const b = e.target.closest('[data-mode]'); if (b) showAuth(b.dataset.mode); });
+$('#authForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = new FormData(e.target), email = String(f.get('email') || '').trim(), password = String(f.get('password') || '');
+  const note = $('#authNote'), btn = $('#authBtn');
+  if (mode !== 'reset' && !/^\S+@\S+\.\S+$/.test(email)) { note.textContent = 'Enter a valid email address.'; note.className = 'note err'; return; }
+  if (mode !== 'forgot' && password.length < 8) { note.textContent = 'Passwords need at least 8 characters.'; note.className = 'note err'; return; }
+  btn.disabled = true; note.textContent = ''; note.className = 'note';
+  try {
+    if (mode === 'signin') { saveSession(await auth('token?grant_type=password', { email, password })); await boot(); }
+    else if (mode === 'signup') {
+      const r = await auth(`signup?redirect_to=${encodeURIComponent(ADMIN_URL)}`, { email, password });
+      if (r.access_token) { saveSession(r); await boot(); }
+      else showAuth('signin', 'Check your inbox and click the confirmation link, then sign in here.', true);
+    } else if (mode === 'forgot') {
+      await auth(`recover?redirect_to=${encodeURIComponent(ADMIN_URL)}`, { email });
+      showAuth('signin', 'If that email has an account, a reset link is on its way.', true);
+    } else if (mode === 'reset') {
+      const token = await fresh();
+      const r = await fetch(`${SB_URL}/auth/v1/user`, { method: 'PUT', headers: { apikey: SB_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) });
+      if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.msg || j.message || 'Could not save the password.'); }
+      toast('Password saved'); await boot();
+    }
+  } catch (err) {
+    const m = String(err.message || err);
+    note.textContent = /invalid login/i.test(m) ? 'That email and password don’t match.' : /not confirmed/i.test(m) ? 'Confirm your email first: check your inbox for the link.' : m;
+    note.className = 'note err';
+  }
+  btn.disabled = false;
+});
+document.addEventListener('click', async e => {
+  if (!e.target.closest('[data-signout]')) return;
+  try { if (session) await auth('logout', {}, session.access_token); } catch (err) {}
+  saveSession(null); showAuth('signin');
+});
+
+/* links from emails come back with the session in the URL hash */
+function readHash() {
+  if (!location.hash.includes('access_token=')) {
+    if (location.hash.includes('error_description=')) {
+      const p = new URLSearchParams(location.hash.slice(1)); history.replaceState(null, '', location.pathname);
+      return { error: p.get('error_description') };
+    }
+    return null;
+  }
+  const p = new URLSearchParams(location.hash.slice(1));
+  saveSession({ access_token: p.get('access_token'), refresh_token: p.get('refresh_token'), expires_in: +p.get('expires_in') || 3600 });
+  history.replaceState(null, '', location.pathname);
+  return { type: p.get('type') };
+}
+
+/* ---------- app ---------- */
+let tab = 'inbox';
+async function boot() {
+  try {
+    const user = await api('/auth/v1/user');
+    session.user = user; saveSession(session);
+    const ok = await api('/rest/v1/rpc/sc_is_admin', { method: 'POST', body: {} });
+    if (!ok) { $('#auth').hidden = true; $('#app').hidden = true; $('#denied').hidden = false; $('#deniedEmail').textContent = user.email; return; }
+    $('#auth').hidden = true; $('#denied').hidden = true; $('#app').hidden = false;
+    $('#who').textContent = user.email;
+    const want = location.pathname.split('/')[2] || location.hash.slice(1);   // /admin/products
+    go(['inbox', 'products', 'numbers', 'gallery', 'clients', 'team', 'content', 'pages', 'settings'].includes(want) ? want : 'inbox');
+  } catch (err) {
+    if (session) { saveSession(null); }
+    showAuth('signin', session === null && err.message !== 'Signed out' ? err.message : '');
+  }
+}
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) go(b.dataset.tab); });
+addEventListener('hashchange', () => { const t = location.hash.slice(1); if (!$('#app').hidden && t && t !== tab && VIEWS[t]) go(t); });
+function go(t) {
+  tab = t;
+  history.replaceState(null, '', t === 'inbox' ? '/admin/' : '/admin/' + t);
+  document.querySelectorAll('#tabs [data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  $('#view').innerHTML = '<div class="spin"></div>';
+  closeDrawer();
+  VIEWS[t]().catch(err => { $('#view').innerHTML = `<div class="empty">Couldn’t load this: ${esc(err.message)}</div>`; });
+  refreshUnread();
+}
+async function refreshUnread() {
+  try {
+    const r = await api('/rest/v1/sc_messages?select=id&read=eq.false&archived=eq.false');
+    const b = $('#unread'); b.textContent = r.length; b.hidden = !r.length;
+  } catch (e) {}
+}
+const when = d => {
+  const t = new Date(d), now = new Date();
+  return t.toDateString() === now.toDateString() ? t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : t.toLocaleDateString([], { day: 'numeric', month: 'short', year: t.getFullYear() === now.getFullYear() ? undefined : 'numeric' });
+};
+
+/* reorder: swap with the neighbour and save both positions */
+async function move(table, list, i, dir) {
+  const j = i + dir; if (j < 0 || j >= list.length) return;
+  const a = list[i], b = list[j];
+  const sa = a.sort === b.sort ? i + 1 : a.sort, sb = a.sort === b.sort ? j + 1 : b.sort;
+  await Promise.all([db.update(table, a.id, { sort: sb }), db.update(table, b.id, { sort: sa })]);
+}
+const nextSort = list => list.reduce((m, r) => Math.max(m, r.sort || 0), 0) + 1;
+
+/* ---------- drawer ---------- */
+function openDrawer(html) { $('#drawerPanel').innerHTML = html; $('#drawer').hidden = false; document.body.style.overflow = 'hidden'; }
+function closeDrawer() { $('#drawer').hidden = true; document.body.style.overflow = ''; }
+$('#drawer').addEventListener('click', e => { if (e.target.id === 'drawer' || e.target.closest('[data-close]')) closeDrawer(); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#drawer').hidden) closeDrawer(); });
+
+const VIEWS = {
+  /* ---------- inbox ---------- */
+  async inbox() {
+    let box = 'inbox', sel = null, all = [];
+    const v = $('#view');
+    const load = async () => { all = await db.list('sc_messages', 'order=created_at.desc'); };
+    const render = () => {
+      const list = all.filter(m => box === 'inbox' ? !m.archived : m.archived);
+      if (sel && !list.find(m => m.id === sel)) sel = null;
+      const cur = list.find(m => m.id === sel);
+      v.innerHTML = `
+        <div class="head"><div><h2>Inbox</h2><p>Messages sent from the contact form on the website.</p></div>
+          <div class="seg"><button data-box="inbox" class="${box === 'inbox' ? 'on' : ''}">Inbox</button><button data-box="archived" class="${box === 'archived' ? 'on' : ''}">Archived</button></div></div>
+        ${list.length ? `<div class="inbox">
+          <div class="mlist">${list.map(m => `<button class="mitem ${m.read ? '' : 'unread'} ${m.id === sel ? 'on' : ''}" data-id="${m.id}"><time>${when(m.created_at)}</time><b>${esc(m.name)}</b><span>${esc(m.message)}</span></button>`).join('')}</div>
+          <div class="mview">${cur ? `
+            <h3>${esc(cur.name)}</h3>
+            <div class="meta"><a href="mailto:${esc(cur.email)}">${esc(cur.email)}</a>${cur.company ? `<span>${esc(cur.company)}</span>` : ''}${cur.budget ? `<span>Budget: ${esc(cur.budget)}</span>` : ''}<span>${new Date(cur.created_at).toLocaleString()}</span></div>
+            <div class="body">${esc(cur.message)}</div>
+            <div class="actions">
+              <a class="btn" href="mailto:${esc(cur.email)}?subject=${encodeURIComponent('Re: your message to South Circle')}">Reply by email</a>
+              <button class="btn ghost" data-act="read">${cur.read ? 'Mark as unread' : 'Mark as read'}</button>
+              <button class="btn ghost" data-act="archive">${cur.archived ? 'Move to inbox' : 'Archive'}</button>
+              <button class="btn danger" data-act="delete">Delete</button>
+            </div>` : '<p style="color:var(--mute)">Pick a message to read it.</p>'}</div>
+        </div>` : `<div class="empty">${box === 'inbox' ? 'No messages yet. When someone uses “Send us a message” on the site, it shows up here.' : 'Nothing archived.'}</div>`}`;
+    };
+    await load(); render();
+    v.onclick = async e => {
+      const bx = e.target.closest('[data-box]'); if (bx) { box = bx.dataset.box; sel = null; render(); return; }
+      const it = e.target.closest('.mitem');
+      if (it) {
+        sel = it.dataset.id; const m = all.find(x => x.id === sel);
+        if (m && !m.read) { m.read = true; db.update('sc_messages', m.id, { read: true }).then(refreshUnread).catch(err => toast(err.message, 1)); }
+        render(); return;
+      }
+      const act = e.target.closest('[data-act]'); if (!act) return;
+      const m = all.find(x => x.id === sel); if (!m) return;
+      try {
+        if (act.dataset.act === 'read') { m.read = !m.read; await db.update('sc_messages', m.id, { read: m.read }); }
+        if (act.dataset.act === 'archive') { m.archived = !m.archived; await db.update('sc_messages', m.id, { archived: m.archived }); toast(m.archived ? 'Archived' : 'Moved to inbox'); sel = null; }
+        if (act.dataset.act === 'delete') { if (!confirm(`Delete the message from ${m.name}? This can’t be undone.`)) return; await db.remove('sc_messages', m.id); all = all.filter(x => x.id !== m.id); sel = null; toast('Deleted'); }
+        render(); refreshUnread();
+      } catch (err) { toast(err.message, 1); }
+    };
+  },
+
+  /* ---------- products ---------- */
+  async products() {
+    const v = $('#view');
+    let list = await db.list('sc_products');
+    let logos = 'colour';
+    try { const s = await api('/rest/v1/sc_settings?key=eq.product_logos&select=value'); if (s && s[0]) logos = s[0].value; } catch (e) {}
+    const LOGOS = [['colour', 'In colour'], ['black', 'Black'], ['white', 'White']];
+    const dot = p => `<span class="dot" style="background:${esc(p.bg)};color:${esc(p.fg)}">${p.icon_url ? `<img src="${esc(p.icon_url)}" alt="">` : `<svg viewBox="0 0 24 24" fill="currentColor">${p.mark || '<circle cx="12" cy="12" r="6"/>'}</svg>`}</span>`;
+    const render = () => {
+      v.innerHTML = `
+        <div class="head"><div><h2>Products</h2><p>The apps that orbit on the Products page. Click one on the site to see its card. Order here is the order they circle in.</p></div>
+          <div class="head__actions"><button class="btn" data-add>Add product</button></div></div>
+        <div class="logoset"><div><b>Logos on the site</b><p>Black or white keeps every logo neutral; each one shows its own colours when someone hovers over it.</p></div>
+          <div class="seg">${LOGOS.map(([k, l]) => `<button data-logo="${k}" class="${logos === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>
+        ${list.length ? `<div class="rows">${list.map((p, i) => `
+          <div class="row ${p.published ? '' : 'off'}" data-i="${i}">
+            ${dot(p)}
+            <div><div class="row__title">${esc(p.name)}<span class="tag">${esc(p.status)}</span></div><div class="row__sub">${esc(p.tag)}</div></div>
+            <div class="row__ctl">
+              <button class="icon-btn" data-act="up" title="Move up" ${i ? '' : 'disabled'}>${ICON.up}</button>
+              <button class="icon-btn" data-act="down" title="Move down" ${i < list.length - 1 ? '' : 'disabled'}>${ICON.down}</button>
+              <button class="icon-btn" data-act="pub" title="${p.published ? 'Hide from site' : 'Show on site'}">${p.published ? ICON.eye : ICON.hidden}</button>
+              <button class="icon-btn" data-act="edit" title="Edit">${ICON.edit}</button>
+              <button class="icon-btn" data-act="del" title="Delete">${ICON.trash}</button>
+            </div>
+          </div>`).join('')}</div>` : '<div class="empty">No products yet.</div>'}`;
+    };
+    const reload = async () => { list = await db.list('sc_products'); render(); };
+    const edit = p => {
+      const n = !p; p = p || { name: '', tag: '', description: '', category: '', platforms: '', year: String(new Date().getFullYear()), status: 'Live', anim: 'bars', bg: '#ff4a12', fg: '#0b0b0b', url: '', mark: '', icon_url: '', published: true };
+      let icon = p.icon_url;
+      openDrawer(`
+        <div class="drawer__head"><h3>${n ? 'Add product' : 'Edit product'}</h3><button class="icon-btn" data-close title="Close">×</button></div>
+        <form class="form" id="pf">
+          <div class="prev" id="pprev"></div>
+          <div class="grid2">
+            <label class="f">Name<input name="name" required maxlength="60" value="${esc(p.name)}"></label>
+            <label class="f">Status<select name="status">${STATUSES.map(s => `<option ${s === p.status ? 'selected' : ''}>${s}</option>`).join('')}</select></label>
+          </div>
+          <label class="f">One-line description<input name="tag" maxlength="90" value="${esc(p.tag)}" placeholder="Bookkeeping for small businesses"></label>
+          <label class="f">About it<textarea name="description" maxlength="400" rows="3">${esc(p.description)}</textarea></label>
+          <div class="grid2">
+            <label class="f">Category<input name="category" maxlength="40" value="${esc(p.category)}" placeholder="Fintech"></label>
+            <label class="f">Platforms<input name="platforms" maxlength="60" value="${esc(p.platforms)}" placeholder="Web, iOS"></label>
+            <label class="f">Since<input name="year" maxlength="10" value="${esc(p.year)}"></label>
+            <label class="f">Card animation<select name="anim">${Object.entries(ANIMS).map(([k, l]) => `<option value="${k}" ${k === p.anim ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+            <label class="f">Circle colour<span class="color"><input type="color" name="bg" value="${esc(p.bg)}"><input name="bgx" value="${esc(p.bg)}" maxlength="7"></span></label>
+            <label class="f">Icon colour<span class="color"><input type="color" name="fg" value="${esc(p.fg)}"><input name="fgx" value="${esc(p.fg)}" maxlength="7"></span></label>
+          </div>
+          <label class="f">Link (website or app store)<input name="url" type="url" value="${esc(p.url)}" placeholder="https://"><small>Leave empty to hide the “Visit product” button.</small></label>
+          <div class="f">Icon<span style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn ghost sm" id="picon">${ICON.image} Upload icon</button><button type="button" class="btn ghost sm" id="ricon" ${icon ? '' : 'hidden'}>Use the drawn shape</button></span><small>A square PNG or SVG with a transparent background works best.</small></div>
+          <label class="f" style="display:flex;flex-direction:row;align-items:center;gap:8px;color:var(--ink)"><input type="checkbox" name="published" ${p.published ? 'checked' : ''} style="width:auto"> Show on the website</label>
+          <div class="drawer__foot"><button class="btn" type="submit">${n ? 'Add product' : 'Save changes'}</button><button class="btn ghost" type="button" data-close>Cancel</button><span class="note" id="pnote"></span></div>
+        </form>`);
+      const form = $('#pf');
+      const preview = () => {
+        const f = new FormData(form);
+        $('#pprev').innerHTML = dot({ bg: f.get('bg'), fg: f.get('fg'), mark: p.mark, icon_url: icon }) + `<div><div class="row__title">${esc(f.get('name') || 'Product name')}</div><div class="row__sub">${esc(f.get('tag') || 'One-line description')}</div></div>`;
+      };
+      form.addEventListener('input', e => {
+        const t = e.target;
+        if (t.type === 'color') form.elements[t.name + 'x'].value = t.value;
+        if (/x$/.test(t.name) && /^#[0-9a-f]{6}$/i.test(t.value)) form.elements[t.name.slice(0, 2)].value = t.value;
+        preview();
+      });
+      $('#picon').onclick = async () => {
+        const [file] = await pick(); if (!file) return;
+        $('#pnote').textContent = 'Uploading…'; $('#pnote').className = 'note';
+        try { icon = await upload(file, 'products', 512); $('#ricon').hidden = false; $('#pnote').textContent = ''; preview(); }
+        catch (err) { $('#pnote').textContent = err.message; $('#pnote').className = 'note err'; }
+      };
+      $('#ricon').onclick = () => { icon = ''; $('#ricon').hidden = true; preview(); };
+      form.onsubmit = async e => {
+        e.preventDefault();
+        const f = new FormData(form);
+        const row = { name: f.get('name').trim(), status: f.get('status'), tag: f.get('tag').trim(), description: f.get('description').trim(), category: f.get('category').trim(),
+          platforms: f.get('platforms').trim(), year: f.get('year').trim(), anim: f.get('anim'), bg: f.get('bg'), fg: f.get('fg'), url: f.get('url').trim(), icon_url: icon || '', published: !!f.get('published') };
+        if (!row.name) { $('#pnote').textContent = 'Give it a name.'; $('#pnote').className = 'note err'; return; }
+        const btn = form.querySelector('[type=submit]'); btn.disabled = true;
+        try {
+          if (n) await db.insert('sc_products', { ...row, sort: nextSort(list), mark: '<circle cx="12" cy="12" r="7"/>' });
+          else { await db.update('sc_products', p.id, row); if (p.icon_url && p.icon_url !== row.icon_url) removeFile(p.icon_url); }
+          closeDrawer(); toast(n ? 'Product added' : 'Saved'); await reload();
+        } catch (err) { $('#pnote').textContent = err.message; $('#pnote').className = 'note err'; btn.disabled = false; }
+      };
+      preview();
+    };
+    render();
+    v.onclick = async e => {
+      if (e.target.closest('[data-add]')) return edit(null);
+      const lg = e.target.closest('[data-logo]');
+      if (lg) {
+        try {
+          await api('/rest/v1/sc_settings', { method: 'POST', body: { key: 'product_logos', value: lg.dataset.logo, updated_at: new Date().toISOString() }, headers: { Prefer: 'resolution=merge-duplicates,return=minimal' } });
+          logos = lg.dataset.logo; render(); toast(logos === 'colour' ? 'Logos show in colour' : `Logos show in ${logos} until hovered`);
+        } catch (err) { toast(err.message, 1); }
+        return;
+      }
+      const b = e.target.closest('[data-act]'); if (!b) return;
+      const i = +b.closest('[data-i]').dataset.i, p = list[i];
+      try {
+        if (b.dataset.act === 'edit') return edit(p);
+        if (b.dataset.act === 'up' || b.dataset.act === 'down') await move('sc_products', list, i, b.dataset.act === 'up' ? -1 : 1);
+        if (b.dataset.act === 'pub') { await db.update('sc_products', p.id, { published: !p.published }); toast(p.published ? 'Hidden from the site' : 'Shown on the site'); }
+        if (b.dataset.act === 'del') { if (!confirm(`Delete ${p.name}? This can’t be undone.`)) return; await db.remove('sc_products', p.id); removeFile(p.icon_url); toast('Deleted'); }
+        await reload();
+      } catch (err) { toast(err.message, 1); }
+    };
+  },
+
+  /* ---------- gallery ---------- */
+  async gallery() {
+    const v = $('#view');
+    let list = await db.list('sc_gallery');
+    const ART_BG = g => `<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="${esc(g.bg)}"/><circle cx="50" cy="50" r="18" fill="${esc(g.fg)}" opacity=".5"/></svg>`;
+    const render = () => {
+      v.innerHTML = `
+        <div class="head"><div><h2>Gallery</h2><p>“The life we live outside building products.” Photos show as circles in black and white, and turn to colour on hover. The first ${SLOT_COUNT} visible photos fill the page. Use the arrows to change the order.</p></div>
+          <div class="head__actions"><button class="btn" data-add>Upload photos</button></div></div>
+        <div class="drop" id="drop">Drop photos here to add them, or use “Upload photos”. Large photos are resized automatically.</div>
+        ${list.length ? `<div class="ggrid">${list.map((g, i) => `
+          <div class="gcard ${g.published ? '' : 'off'}" data-i="${i}">
+            <div class="gcard__pic">${g.src ? `<img src="${esc(g.src)}" alt="" loading="lazy">` : ART_BG(g) + '<em>Drawing</em>'}<span class="gcard__n">${i + 1}</span></div>
+            <input value="${esc(g.caption)}" placeholder="Caption (shows on hover)" data-cap maxlength="60">
+            <div class="gcard__ctl">
+              <span>
+                <button class="icon-btn" data-act="up" title="Move earlier" ${i ? '' : 'disabled'}>${ICON.up}</button>
+                <button class="icon-btn" data-act="down" title="Move later" ${i < list.length - 1 ? '' : 'disabled'}>${ICON.down}</button>
+              </span>
+              <span>
+                <button class="icon-btn" data-act="photo" title="${g.src ? 'Replace photo' : 'Add a photo'}">${ICON.image}</button>
+                <button class="icon-btn" data-act="pub" title="${g.published ? 'Hide from site' : 'Show on site'}">${g.published ? ICON.eye : ICON.hidden}</button>
+                <button class="icon-btn" data-act="del" title="Delete">${ICON.trash}</button>
+              </span>
+            </div>
+          </div>`).join('')}</div>` : '<div class="empty">No photos yet.</div>'}`;
+    };
+    const reload = async () => { list = await db.list('sc_gallery'); render(); };
+    const addFiles = async files => {
+      files = files.filter(f => f.type.startsWith('image/'));
+      if (!files.length) return;
+      let s = nextSort(list), done = 0;
+      toast(`Uploading ${files.length} photo${files.length > 1 ? 's' : ''}…`);
+      for (const f of files) {
+        try {
+          const src = await upload(f, 'gallery', 1400);
+          await db.insert('sc_gallery', { src, caption: f.name.replace(/\.\w+$/, '').replace(/[-_]+/g, ' ').slice(0, 60), sort: s++ });
+          done++;
+        } catch (err) { toast(`${f.name}: ${err.message}`, 1); }
+      }
+      if (done) toast(`${done} photo${done > 1 ? 's' : ''} added`);
+      await reload();
+    };
+    render();
+    v.onclick = async e => {
+      if (e.target.closest('[data-add]')) return addFiles(await pick(true));
+      const b = e.target.closest('[data-act]'); if (!b) return;
+      const i = +b.closest('[data-i]').dataset.i, g = list[i];
+      try {
+        if (b.dataset.act === 'up' || b.dataset.act === 'down') await move('sc_gallery', list, i, b.dataset.act === 'up' ? -1 : 1);
+        if (b.dataset.act === 'pub') { await db.update('sc_gallery', g.id, { published: !g.published }); toast(g.published ? 'Hidden from the site' : 'Shown on the site'); }
+        if (b.dataset.act === 'photo') {
+          const [f] = await pick(); if (!f) return;
+          toast('Uploading…');
+          const src = await upload(f, 'gallery', 1400);
+          await db.update('sc_gallery', g.id, { src }); removeFile(g.src); toast('Photo updated');
+        }
+        if (b.dataset.act === 'del') { if (!confirm('Delete this photo? This can’t be undone.')) return; await db.remove('sc_gallery', g.id); removeFile(g.src); toast('Deleted'); }
+        await reload();
+      } catch (err) { toast(err.message, 1); }
+    };
+    v.onchange = async e => {
+      const inp = e.target.closest('[data-cap]'); if (!inp) return;
+      const g = list[+inp.closest('[data-i]').dataset.i];
+      try { await db.update('sc_gallery', g.id, { caption: inp.value.trim() }); g.caption = inp.value.trim(); toast('Caption saved'); } catch (err) { toast(err.message, 1); }
+    };
+    v.ondragover = e => { if (e.dataTransfer?.types?.includes('Files')) { e.preventDefault(); $('#drop')?.classList.add('over'); } };
+    v.ondragleave = e => { if (e.target.id === 'drop') e.target.classList.remove('over'); };
+    v.ondrop = e => { if (!e.dataTransfer?.files?.length) return; e.preventDefault(); $('#drop')?.classList.remove('over'); addFiles([...e.dataTransfer.files]); };
+  },
+
+  /* ---------- clients ---------- */
+  async clients() {
+    const v = $('#view');
+    let list = await db.list('sc_clients');
+    const render = () => {
+      v.innerHTML = `
+        <div class="head"><div><h2>Clients</h2><p>The “Trusted by teams building real products” strip on the first page. Upload a logo to show it instead of the name. On the site every logo is shown in one colour (white or black, to match the theme), so photos or logos with a coloured background should go through “Make one-colour” first.</p></div>
+          <div class="head__actions"><button class="btn" data-add>Add client</button></div></div>
+        ${list.length ? `<div class="rows">${list.map((c, i) => `
+          <div class="row ${c.published ? '' : 'off'}" data-i="${i}">
+            <span class="clogo">${c.logo_url ? `<img src="${esc(c.logo_url)}" alt="">` : esc(c.name.slice(0, 2))}</span>
+            <div><div class="row__title">${esc(c.name)}</div><div class="row__sub">${c.url ? esc(c.url) : 'No link'}${c.logo_url ? ' · logo' : ' · name only'}</div></div>
+            <div class="row__ctl">
+              <button class="icon-btn" data-act="up" title="Move up" ${i ? '' : 'disabled'}>${ICON.up}</button>
+              <button class="icon-btn" data-act="down" title="Move down" ${i < list.length - 1 ? '' : 'disabled'}>${ICON.down}</button>
+              <button class="icon-btn" data-act="pub" title="${c.published ? 'Hide from site' : 'Show on site'}">${c.published ? ICON.eye : ICON.hidden}</button>
+              <button class="icon-btn" data-act="edit" title="Edit">${ICON.edit}</button>
+              <button class="icon-btn" data-act="del" title="Delete">${ICON.trash}</button>
+            </div>
+          </div>`).join('')}</div>` : '<div class="empty">No clients yet. The strip is hidden on the site until you add one.</div>'}`;
+    };
+    const reload = async () => { list = await db.list('sc_clients'); render(); };
+    const edit = c => {
+      const n = !c; c = c || { name: '', url: '', logo_url: '', published: true };
+      let logo = c.logo_url;
+      openDrawer(`
+        <div class="drawer__head"><h3>${n ? 'Add client' : 'Edit client'}</h3><button class="icon-btn" data-close title="Close">×</button></div>
+        <form class="form" id="cf">
+          <label class="f">Name<input name="name" required maxlength="60" value="${esc(c.name)}"></label>
+          <label class="f">Link <i style="font-style:normal">(optional)</i><input name="url" type="url" value="${esc(c.url)}" placeholder="https://"></label>
+          <div class="f">Logo <span id="clprev" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"></span></div>
+          <div id="vzSlot"></div>
+          <label class="f" style="display:flex;flex-direction:row;align-items:center;gap:8px;color:var(--ink)"><input type="checkbox" name="published" ${c.published ? 'checked' : ''} style="width:auto"> Show on the website</label>
+          <div class="drawer__foot"><button class="btn" type="submit">${n ? 'Add client' : 'Save changes'}</button><button class="btn ghost" type="button" data-close>Cancel</button><span class="note" id="cnote"></span></div>
+        </form>`);
+      const prev = () => {
+        $('#clprev').innerHTML = `<span class="clogo">${logo ? `<img src="${esc(logo)}" alt="">` : '—'}</span><button type="button" class="btn ghost sm" id="clup">${ICON.image} ${logo ? 'Replace' : 'Upload'} logo</button>${logo ? '<button type="button" class="btn ghost sm" id="clvz">Make one-colour</button><button type="button" class="btn ghost sm" id="clrm">Remove</button>' : ''}`;
+        const useVector = url => { logo = url; prev(); $('#cnote').textContent = 'One-colour logo ready. Save to put it on the site.'; $('#cnote').className = 'note'; };
+        $('#clup').onclick = async () => {
+          const [file] = await pick(); if (!file) return;
+          $('#cnote').textContent = 'Uploading…'; $('#cnote').className = 'note';
+          try {
+            logo = await upload(file, 'clients', 600); $('#cnote').textContent = ''; prev();
+            if (file.type !== 'image/svg+xml' || /<image[\s>]/i.test(await file.text())) openVectorizer($('#vzSlot'), file, useVector);   // a picture, not a clean vector
+          } catch (err) { $('#cnote').textContent = err.message; $('#cnote').className = 'note err'; }
+        };
+        if ($('#clvz')) $('#clvz').onclick = () => openVectorizer($('#vzSlot'), logo, useVector);
+        if ($('#clrm')) $('#clrm').onclick = () => { logo = ''; $('#vzSlot').innerHTML = ''; prev(); };
+      };
+      prev();
+      $('#cf').onsubmit = async e => {
+        e.preventDefault();
+        const f = new FormData(e.target);
+        const row = { name: f.get('name').trim(), url: f.get('url').trim(), logo_url: logo || '', published: !!f.get('published') };
+        if (!row.name) return;
+        try {
+          if (n) await db.insert('sc_clients', { ...row, sort: nextSort(list) });
+          else { await db.update('sc_clients', c.id, row); if (c.logo_url && c.logo_url !== row.logo_url) removeFile(c.logo_url); }
+          closeDrawer(); toast(n ? 'Client added' : 'Saved'); await reload();
+        } catch (err) { $('#cnote').textContent = err.message; $('#cnote').className = 'note err'; }
+      };
+    };
+    render();
+    v.onclick = async e => {
+      if (e.target.closest('[data-add]')) return edit(null);
+      const b = e.target.closest('[data-act]'); if (!b) return;
+      const i = +b.closest('[data-i]').dataset.i, c = list[i];
+      try {
+        if (b.dataset.act === 'edit') return edit(c);
+        if (b.dataset.act === 'up' || b.dataset.act === 'down') await move('sc_clients', list, i, b.dataset.act === 'up' ? -1 : 1);
+        if (b.dataset.act === 'pub') { await db.update('sc_clients', c.id, { published: !c.published }); toast(c.published ? 'Hidden from the site' : 'Shown on the site'); }
+        if (b.dataset.act === 'del') { if (!confirm(`Remove ${c.name}?`)) return; await db.remove('sc_clients', c.id); removeFile(c.logo_url); toast('Removed'); }
+        await reload();
+      } catch (err) { toast(err.message, 1); }
+    };
+  },
+  /* ---------- numbers ---------- */
+  async numbers() {
+    const v = $('#view');
+    const DEF = [{ prefix: '', value: '5', suffix: '', label: 'Products launched' }, { prefix: '$', value: '1', suffix: 'M', label: 'Revenue enabled' }, { prefix: '', value: '20000', suffix: '', label: 'Monthly usage' }, { prefix: '', value: '200000', suffix: '', label: 'People reached' }];
+    let items = DEF;
+    try { const s = await api('/rest/v1/sc_settings?key=eq.numbers&select=value'); if (s && s[0]) { const j = JSON.parse(s[0].value); if (Array.isArray(j) && j.length) items = j; } } catch (e) {}
+    while (items.length < 4) items.push({ prefix: '', value: '0', suffix: '', label: '' });
+    items = items.slice(0, 4);
+    const show = n => { const x = Math.max(0, +n.value || 0), dp = Math.min(2, (String(n.value).split('.')[1] || '').length); return esc(n.prefix) + x.toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp }) + esc(n.suffix); };
+    v.innerHTML = `
+      <div class="head"><div><h2>Stats</h2><p>The four big figures on the Stats page. They count up from zero when someone arrives on the page. Commas are added for you, so type 20000 for 20,000.</p></div></div>
+      <div class="nprev" id="nprev"></div>
+      <form id="nf"><div class="nrows">${items.map((n, i) => `
+        <div class="nrow" data-i="${i}"><i>${String(i + 1).padStart(2, '0')}</i>
+          <label class="f">Before<input name="prefix" maxlength="3" value="${esc(n.prefix)}" placeholder="$"></label>
+          <label class="f">Number<input name="value" inputmode="decimal" required value="${esc(n.value)}" placeholder="20000"></label>
+          <label class="f">After<input name="suffix" maxlength="3" value="${esc(n.suffix)}" placeholder="M, k, +"></label>
+          <label class="f wide">Label<input name="label" maxlength="40" value="${esc(n.label)}" placeholder="Monthly usage"></label>
+        </div>`).join('')}</div>
+        <div class="drawer__foot" style="position:static"><button class="btn" type="submit">Save stats</button><span class="note" id="nnote"></span></div>
+      </form>`;
+    const read = () => [...v.querySelectorAll('.nrow')].map(r => { const g = k => r.querySelector(`[name=${k}]`).value.trim(); return { prefix: g('prefix'), value: g('value').replace(/[,\s]/g, ''), suffix: g('suffix'), label: g('label') }; });
+    const preview = () => { $('#nprev').innerHTML = read().map(n => `<div><small>${esc(n.label || '—')}</small><b>${show(n)}</b></div>`).join(''); };
+    $('#nf').oninput = preview; preview();
+    $('#nf').onsubmit = async e => {
+      e.preventDefault();
+      const rows = read(), note = $('#nnote');
+      const bad = rows.findIndex(n => !/^\d+(\.\d{1,2})?$/.test(n.value));
+      if (bad > -1) { note.textContent = `Figure ${bad + 1}: use digits only, like 20000 or 1.5.`; note.className = 'note err'; return; }
+      const btn = e.target.querySelector('[type=submit]'); btn.disabled = true;
+      try {
+        await api('/rest/v1/sc_settings', { method: 'POST', body: { key: 'numbers', value: JSON.stringify(rows), updated_at: new Date().toISOString() }, headers: { Prefer: 'resolution=merge-duplicates,return=minimal' } });
+        note.textContent = ''; toast('Stats saved. They’re live on the site.');
+      } catch (err) { note.textContent = err.message; note.className = 'note err'; }
+      btn.disabled = false;
+    };
+  },
+
+  /* ---------- team (Careers page) ---------- */
+  async team() {
+    const v = $('#view');
+    let list = await db.list('sc_team');
+    const face = t => `<span class="tface">${t.photo_url ? `<img src="${esc(t.photo_url)}" alt="">` : esc((t.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase())}</span>`;
+    const work = t => String(t.contributions || '').split('\n').map(x => x.trim()).filter(Boolean);
+    const render = () => {
+      v.innerHTML = `
+        <div class="head"><div><h2>Team</h2><p>Past and present team members on the Careers page. Each shows as a floating circle; hovering it shows their name, role and what they’ve worked on. A square photo of a face works best.</p></div>
+          <div class="head__actions"><button class="btn" data-add>Add person</button></div></div>
+        ${list.length ? `<div class="rows">${list.map((t, i) => `
+          <div class="row ${t.published ? '' : 'off'}" data-i="${i}">
+            ${face(t)}
+            <div><div class="row__title">${esc(t.name)}</div><div class="row__sub">${esc(t.role || 'No role')} · ${work(t).length} contribution${work(t).length === 1 ? '' : 's'}</div></div>
+            <div class="row__ctl">
+              <button class="icon-btn" data-act="up" title="Move up" ${i ? '' : 'disabled'}>${ICON.up}</button>
+              <button class="icon-btn" data-act="down" title="Move down" ${i < list.length - 1 ? '' : 'disabled'}>${ICON.down}</button>
+              <button class="icon-btn" data-act="pub" title="${t.published ? 'Hide from site' : 'Show on site'}">${t.published ? ICON.eye : ICON.hidden}</button>
+              <button class="icon-btn" data-act="edit" title="Edit">${ICON.edit}</button>
+              <button class="icon-btn" data-act="del" title="Delete">${ICON.trash}</button>
+            </div>
+          </div>`).join('')}</div>` : '<div class="empty">No one yet. Until you add people, the Careers page shows placeholder circles.</div>'}`;
+    };
+    const reload = async () => { list = await db.list('sc_team'); render(); };
+    const edit = t => {
+      const n = !t; t = t || { name: '', role: '', contributions: '', photo_url: '', published: true };
+      let photo = t.photo_url;
+      openDrawer(`
+        <div class="drawer__head"><h3>${n ? 'Add person' : 'Edit person'}</h3><button class="icon-btn" data-close title="Close">×</button></div>
+        <form class="form" id="tf">
+          <label class="f">Name<input name="name" required maxlength="80" value="${esc(t.name)}"></label>
+          <label class="f">Role <i style="font-style:normal">(optional)</i><input name="role" maxlength="80" value="${esc(t.role)}" placeholder="Product designer, 2021–now"></label>
+          <label class="f">Contributions<textarea name="contributions" rows="5" maxlength="1200" placeholder="One per line, e.g.&#10;Design system for Ledgerly&#10;Payments at Haul">${esc(t.contributions)}</textarea><small>One per line. The first six show on the site.</small></label>
+          <div class="f">Photo <span id="tprev" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"></span></div>
+          <label class="f" style="display:flex;flex-direction:row;align-items:center;gap:8px;color:var(--ink)"><input type="checkbox" name="published" ${t.published ? 'checked' : ''} style="width:auto"> Show on the website</label>
+          <div class="drawer__foot"><button class="btn" type="submit">${n ? 'Add person' : 'Save changes'}</button><button class="btn ghost" type="button" data-close>Cancel</button><span class="note" id="tnote"></span></div>
+        </form>`);
+      const prev = () => {
+        $('#tprev').innerHTML = `${face({ name: $('#tf [name=name]').value, photo_url: photo })}<button type="button" class="btn ghost sm" id="tup">${ICON.image} ${photo ? 'Replace' : 'Upload'} photo</button>${photo ? '<button type="button" class="btn ghost sm" id="trm">Remove</button>' : ''}`;
+        $('#tup').onclick = async () => {
+          const [file] = await pick(); if (!file) return;
+          $('#tnote').textContent = 'Uploading…'; $('#tnote').className = 'note';
+          try { photo = await upload(file, 'team', 800); $('#tnote').textContent = ''; prev(); } catch (err) { $('#tnote').textContent = err.message; $('#tnote').className = 'note err'; }
+        };
+        if ($('#trm')) $('#trm').onclick = () => { photo = ''; prev(); };
+      };
+      prev();
+      $('#tf [name=name]').addEventListener('input', () => { if (!photo) prev(); });
+      $('#tf').onsubmit = async e => {
+        e.preventDefault();
+        const f = new FormData(e.target);
+        const row = { name: f.get('name').trim(), role: f.get('role').trim(), contributions: f.get('contributions').split('\n').map(x => x.trim()).filter(Boolean).join('\n'), photo_url: photo || '', published: !!f.get('published') };
+        if (!row.name) return;
+        const btn = e.target.querySelector('[type=submit]'); btn.disabled = true;
+        try {
+          if (n) await db.insert('sc_team', { ...row, sort: nextSort(list) });
+          else { await db.update('sc_team', t.id, row); if (t.photo_url && t.photo_url !== row.photo_url) removeFile(t.photo_url); }
+          closeDrawer(); toast(n ? 'Person added' : 'Saved'); await reload();
+        } catch (err) { $('#tnote').textContent = err.message; $('#tnote').className = 'note err'; btn.disabled = false; }
+      };
+    };
+    render();
+    v.onclick = async e => {
+      if (e.target.closest('[data-add]')) return edit(null);
+      const b = e.target.closest('[data-act]'); if (!b) return;
+      const i = +b.closest('[data-i]').dataset.i, t = list[i];
+      try {
+        if (b.dataset.act === 'edit') return edit(t);
+        if (b.dataset.act === 'up' || b.dataset.act === 'down') await move('sc_team', list, i, b.dataset.act === 'up' ? -1 : 1);
+        if (b.dataset.act === 'pub') { await db.update('sc_team', t.id, { published: !t.published }); toast(t.published ? 'Hidden from the site' : 'Shown on the site'); }
+        if (b.dataset.act === 'del') { if (!confirm(`Remove ${t.name}?`)) return; await db.remove('sc_team', t.id); removeFile(t.photo_url); toast('Removed'); }
+        await reload();
+      } catch (err) { toast(err.message, 1); }
+    };
+  }
+};
+
+/* ---------- one-colour logo tool: traces a picture into a clean single-colour SVG, right in the browser ---------- */
+async function rasterize(src) {                       // any image (file or link) -> pixels, sized for tracing
+  const blob = src instanceof Blob ? src : await fetch(src).then(r => { if (!r.ok) throw new Error('Couldn’t open that logo.'); return r.blob(); });
+  const url = URL.createObjectURL(blob);
+  try {
+    const img = new Image(); img.src = url; await img.decode();
+    let w = img.naturalWidth || 600, h = img.naturalHeight || 200;
+    const k = Math.min(8, Math.sqrt(520000 / (w * h)));
+    w = Math.max(1, Math.round(w * k)); h = Math.max(1, Math.round(h * k));
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0, w, h);
+    return x.getImageData(0, 0, w, h);
+  } finally { URL.revokeObjectURL(url); }
+}
+const lumAt = (d, i) => 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+function guessMode(px, thr) {                         // keep the smaller of the light / dark parts, or the whole shape
+  const d = px.data; let clear = 0, light = 0, solid = 0;
+  for (let i = 0; i < d.length; i += 16) { if (d[i + 3] < 128) { clear++; continue; } solid++; if (lumAt(d, i) > thr) light++; }
+  const lf = solid ? light / solid : 0, cf = clear / (clear + solid || 1);
+  if (cf > 0.15 && (lf < 0.03 || lf > 0.97)) return 'whole';
+  return lf <= 0.5 ? 'light' : 'dark';
+}
+function traceLogo(px, mode, thr, specks, smooth) {
+  /* 1. which pixels are logo */
+  const { width: W, height: H, data: d } = px, on = new Uint8Array(W * H);
+  let x0 = W, y0 = H, x1 = -1, y1 = -1;
+  for (let y = 0, p = 0; y < H; y++) for (let x = 0; x < W; x++, p++) {
+    const i = p * 4; if (d[i + 3] < 128) continue;
+    const l = lumAt(d, i);
+    if (mode === 'whole' || (mode === 'light' ? l > thr : l <= thr)) { on[p] = 1; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  }
+  if (x1 < 0) return null;
+  const m = (x, y) => x >= 0 && y >= 0 && x < W && y < H ? on[y * W + x] : 0;
+  /* 2. outlines (marching squares, points on pixel edges, coordinates doubled to stay whole numbers) */
+  const nb = new Map(), key = (x, y) => x * 65536 + y;
+  const link = (ax, ay, bx, by) => { const a = key(ax, ay), b = key(bx, by); (nb.get(a) || nb.set(a, []).get(a)).push(b); (nb.get(b) || nb.set(b, []).get(b)).push(a); };
+  for (let y = y0 - 1; y <= y1; y++) for (let x = x0 - 1; x <= x1; x++) {
+    const c = m(x, y) * 8 | m(x + 1, y) * 4 | m(x + 1, y + 1) * 2 | m(x, y + 1);
+    if (!c || c === 15) continue;
+    const T = [2 * x + 2, 2 * y + 1], R = [2 * x + 3, 2 * y + 2], B = [2 * x + 2, 2 * y + 3], L = [2 * x + 1, 2 * y + 2];
+    const S = { 1: [[L, B]], 2: [[B, R]], 3: [[L, R]], 4: [[T, R]], 5: [[T, R], [L, B]], 6: [[T, B]], 7: [[L, T]], 8: [[L, T]], 9: [[T, B]], 10: [[L, T], [B, R]], 11: [[T, R]], 12: [[L, R]], 13: [[B, R]], 14: [[L, B]] }[c];
+    for (const [a, b] of S) link(a[0], a[1], b[0], b[1]);
+  }
+  const loops = [], seen = new Set();
+  for (const start of nb.keys()) {
+    if (seen.has(start)) continue;
+    const loop = []; let prev = -1, cur = start;
+    while (!seen.has(cur)) { seen.add(cur); loop.push([Math.floor(cur / 65536) / 2, (cur % 65536) / 2]); const n = nb.get(cur); const nx = n[0] !== prev ? n[0] : n[1]; prev = cur; cur = nx; }
+    if (loop.length > 2) loops.push(loop);
+  }
+  /* 3. straighten (Ramer–Douglas–Peucker), drop specks, round gentle corners */
+  const rdp = (pts, eps) => {
+    if (pts.length < 3) return pts;
+    const [ax, ay] = pts[0], [bx, by] = pts[pts.length - 1], dx = bx - ax, dy = by - ay, len = Math.hypot(dx, dy) || 1;
+    let best = 0, at = 0;
+    for (let i = 1; i < pts.length - 1; i++) { const dd = Math.abs(dy * pts[i][0] - dx * pts[i][1] + bx * ay - by * ax) / len; if (dd > best) { best = dd; at = i; } }
+    return best > eps ? rdp(pts.slice(0, at + 1), eps).slice(0, -1).concat(rdp(pts.slice(at), eps)) : [pts[0], pts[pts.length - 1]];
+  };
+  const area = pts => pts.reduce((s, p, i) => { const q = pts[(i + 1) % pts.length]; return s + p[0] * q[1] - q[0] * p[1]; }, 0) / 2;
+  const f = v => +(v - x0 + 1).toFixed(1), g = v => +(v - y0 + 1).toFixed(1);
+  let dstr = '';
+  for (const loop of loops) {
+    if (Math.abs(area(loop)) < specks) continue;
+    let far = 0, fd = 0; for (let i = 1; i < loop.length; i++) { const dd = (loop[i][0] - loop[0][0]) ** 2 + (loop[i][1] - loop[0][1]) ** 2; if (dd > fd) { fd = dd; far = i; } }
+    const pts = rdp(loop.slice(0, far + 1), 0.7).slice(0, -1).concat(rdp(loop.slice(far).concat([loop[0]]), 0.7).slice(0, -1));
+    if (pts.length < 3) continue;
+    const n = pts.length, mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    const soft = i => { const a = pts[(i - 1 + n) % n], b = pts[i], c = pts[(i + 1) % n];
+      const u = [b[0] - a[0], b[1] - a[1]], v = [c[0] - b[0], c[1] - b[1]];
+      const cos = (u[0] * v[0] + u[1] * v[1]) / ((Math.hypot(...u) * Math.hypot(...v)) || 1);
+      return smooth && cos > 0.55; };                      // turns gentler than ~57° become curves
+    let s0 = mid(pts[n - 1], pts[0]); dstr += `M${f(s0[0])} ${g(s0[1])}`;
+    for (let i = 0; i < n; i++) {
+      const b = pts[i], e = mid(b, pts[(i + 1) % n]);
+      dstr += soft(i) ? `Q${f(b[0])} ${g(b[1])} ${f(e[0])} ${g(e[1])}` : `L${f(b[0])} ${g(b[1])}L${f(e[0])} ${g(e[1])}`;
+    }
+    dstr += 'Z';
+  }
+  if (!dstr) return null;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${x1 - x0 + 3} ${y1 - y0 + 3}"><path fill="#fff" fill-rule="evenodd" d="${dstr}"/></svg>`;
+}
+function openVectorizer(slot, source, onUse) {
+  const MODES = [['whole', 'Whole shape'], ['light', 'Light parts'], ['dark', 'Dark parts']];
+  slot.innerHTML = `<div class="vz">
+    <div class="vz__head"><div><b>Make a one-colour logo</b><p>Traces the logo into a clean vector so it shows crisp in white or black on the site. Pick which part of the picture is the logo.</p></div><button type="button" class="icon-btn" data-vz="close" title="Close">×</button></div>
+    <div class="seg" id="vzMode">${MODES.map(([k, l]) => `<button type="button" data-m="${k}">${l}</button>`).join('')}</div>
+    <div class="vz__ctl">
+      <label>Light / dark cut <input type="range" id="vzThr" min="20" max="240" value="160"><output id="vzThrO">160</output></label>
+      <label>Remove specks <input type="range" id="vzSp" min="0" max="400" step="10" value="30"><output id="vzSpO">30</output></label>
+      <label>Smooth curves <input type="checkbox" id="vzSm" checked style="width:auto;justify-self:start"><span></span></label>
+    </div>
+    <div class="vz__prev">
+      <div class="vz__box src"><small>Original</small><img id="vzSrc" alt=""></div>
+      <div class="vz__box dk"><small>On dark</small><img id="vzOutD" alt=""></div>
+      <div class="vz__box lt"><small>On light</small><img id="vzOutL" alt=""></div>
+    </div>
+    <div class="vz__acts"><button type="button" class="btn sm" id="vzUse" disabled>Use this logo</button><button type="button" class="btn ghost sm" id="vzFile">Trace a different file…</button><span class="note" id="vzNote">Loading…</span></div>
+  </div>`;
+  const q = s => slot.querySelector(s), note = (t, err) => { q('#vzNote').textContent = t; q('#vzNote').className = 'note' + (err ? ' err' : ''); };
+  let px = null, mode = 'whole', svg = '', timer = 0, srcUrl = '';
+  const setMode = m => { mode = m; slot.querySelectorAll('#vzMode button').forEach(b => b.classList.toggle('on', b.dataset.m === m)); q('#vzThr').disabled = m === 'whole'; };
+  const run = () => {
+    clearTimeout(timer); note('Tracing…'); q('#vzUse').disabled = true;
+    timer = setTimeout(() => {
+      try {
+        svg = traceLogo(px, mode, +q('#vzThr').value, +q('#vzSp').value, q('#vzSm').checked);
+        if (!svg) { q('#vzOutD').removeAttribute('src'); q('#vzOutL').removeAttribute('src'); return note('Nothing left to trace. Try another option or move the cut.', 1); }
+        const u = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        q('#vzOutD').src = u; q('#vzOutL').src = u; q('#vzUse').disabled = false;
+        note(`Vector ready · ${(svg.length / 1024).toFixed(1)} KB`);
+      } catch (e) { note('That didn’t trace. Try another option.', 1); }
+    }, 120);
+  };
+  const load = async src => {
+    try {
+      note('Loading…'); q('#vzUse').disabled = true;
+      if (srcUrl) URL.revokeObjectURL(srcUrl);
+      srcUrl = src instanceof Blob ? URL.createObjectURL(src) : ''; q('#vzSrc').src = srcUrl || src;
+      px = await rasterize(src);
+      setMode(guessMode(px, +q('#vzThr').value)); run();
+    } catch (e) { note(e.message || 'Couldn’t open that image.', 1); }
+  };
+  slot.querySelector('.vz').addEventListener('click', async e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.m) { setMode(b.dataset.m); run(); }
+    if (b.dataset.vz === 'close') { if (srcUrl) URL.revokeObjectURL(srcUrl); slot.innerHTML = ''; }
+    if (b.id === 'vzFile') { const [f] = await pick(); if (f) load(f); }
+    if (b.id === 'vzUse') {
+      b.disabled = true; note('Saving the vector…');
+      try {
+        const url = await upload(new File([svg], 'logo.svg', { type: 'image/svg+xml' }), 'clients');
+        if (srcUrl) URL.revokeObjectURL(srcUrl); slot.innerHTML = ''; onUse(url);
+      } catch (err) { b.disabled = false; note(err.message, 1); }
+    }
+  });
+  q('#vzThr').oninput = () => { q('#vzThrO').textContent = q('#vzThr').value; if (px) run(); };
+  q('#vzSp').oninput = () => { q('#vzSpO').textContent = q('#vzSp').value; if (px) run(); };
+  q('#vzSm').onchange = () => { if (px) run(); };
+  slot.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  load(source);
+}
+
+/* ---------- start ---------- */
+(async () => {
+  const h = readHash();
+  if (h?.error) return showAuth('signin', h.error);
+  if (h?.type === 'recovery') return showAuth('reset');
+  if (session) return boot();
+  showAuth('signin', h?.type === 'signup' ? 'Email confirmed. Sign in to continue.' : '', true);
+})();
+</script>
+<script>/* the admin always loads the newest scripts */
+["/content.js","/admin/extra.js"].forEach(function(f){document.write('<script src="'+f+'?t='+Date.now()+'"><\/script>')});</script>
+</body>
+</html>

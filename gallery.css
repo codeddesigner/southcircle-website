@@ -1,0 +1,23 @@
+/* Gallery page: cursor photo trail (see gallery.js). The old floating circles are retired. */
+#gallery .life__wall{display:none}
+.gt{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;perspective:1000px;perspective-origin:50% 50%}
+.gt__c{position:absolute;left:0;top:0;transform-origin:50% 50%;backface-visibility:hidden;will-change:transform,opacity,filter;
+  background:#222;pointer-events:auto;cursor:zoom-in}
+.gt__c img{width:100%;height:100%;object-fit:cover;display:block;user-select:none}
+@media (hover:none){#gallery .life__center p{display:none}}
+/* the photo viewer */
+dialog.gv{margin:0;padding:0;border:0;background:none;width:100vw;height:100svh;max-width:none;max-height:none;overflow:hidden;color:#f3f1ec}
+dialog.gv::backdrop{background:transparent}
+.gv__bg{position:absolute;inset:0;background:rgba(11,11,11,.9);opacity:0;transition:opacity .3s ease;cursor:zoom-out}
+.gv.on .gv__bg{opacity:1}
+.gv__img{position:absolute;display:block;object-fit:cover;cursor:zoom-out;box-shadow:0 40px 80px -30px rgba(0,0,0,.7);
+  transition:left .6s cubic-bezier(.19,1,.22,1),top .6s cubic-bezier(.19,1,.22,1),width .6s cubic-bezier(.19,1,.22,1),height .6s cubic-bezier(.19,1,.22,1),opacity .25s ease}
+.gv:not(.on) .gv__img{opacity:0}
+.gv__btn{position:absolute;width:48px;height:48px;border-radius:50%;border:1px solid rgba(243,241,236,.35);background:none;color:#f3f1ec;font-size:20px;line-height:1;display:grid;place-items:center;cursor:pointer;opacity:0;transition:opacity .3s ease,background .3s,color .3s}
+.gv.on .gv__btn{opacity:1}
+.gv__btn:hover{background:#f3f1ec;color:#0b0b0b}
+.gv__close{top:clamp(14px,3vh,28px);right:clamp(14px,3vw,32px)}
+.gv__prev,.gv__next{top:50%;margin-top:-24px}
+.gv__prev{left:clamp(10px,2.5vw,32px)}
+.gv__next{right:clamp(10px,2.5vw,32px)}
+@media (max-width:700px){.gv__prev,.gv__next{top:auto;bottom:clamp(14px,4vh,32px);margin-top:0}}
